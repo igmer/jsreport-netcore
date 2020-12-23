@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace JsReport
@@ -27,7 +28,11 @@ namespace JsReport
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddJsReport(new LocalReporting().UseBinary(JsReportBinary.GetBinary()).KillRunningJsReportProcesses().AsUtility().Create());
+            services.AddJsReport(new LocalReporting()
+                .UseBinary(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+        jsreport.Binary.JsReportBinary.GetBinary() :
+        jsreport.Binary.Linux.JsReportBinary.GetBinary())
+                .KillRunningJsReportProcesses().AsUtility().Create());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
